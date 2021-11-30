@@ -80,7 +80,7 @@ func Signup() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, resultInsertionNumber)
+		c.JSON(http.StatusOK, gin.H{"succeeded": true, "insertionNumber": resultInsertionNumber})
 	}
 }
 
@@ -108,7 +108,7 @@ func Signin() gin.HandlerFunc {
 		defer cancel()
 
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"code": "EmailNotExist", "error": "email address does not exist"})
+			c.JSON(http.StatusBadRequest, gin.H{"code": "EmailNotFound", "error": "email address does not exist"})
 			defer cancel()
 			return
 		}
