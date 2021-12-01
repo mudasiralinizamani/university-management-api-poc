@@ -26,6 +26,8 @@ func main() {
 
 	// Pipeline - Mudasir Ali
 	routers.AuthRouter(app)
+	// app.Use(middlewares.Authorization())
+	routers.UserRouter(app)
 
 	app.Run(":" + port)
 }
