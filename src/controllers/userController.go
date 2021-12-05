@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 	"university-management-api/src/data"
-	"university-management-api/src/helpers"
 	"university-management-api/src/models"
 	"university-management-api/src/services"
 
@@ -17,12 +16,6 @@ import (
 
 func GetUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// err := helpers.CheckUserType(c, "ADMIN")
-
-		// if err != nil {
-		// 	c.JSON(http.StatusBadRequest, gin.H{"code": "UnAuthorized", "error": err.Error()})
-		// 	return
-		// }
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -80,21 +73,16 @@ func GetUser() gin.HandlerFunc {
 		err := services.CheckUser(user_id)
 
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"code": "UserNotFound", "error": "User does not exist"})
-			return
-		}
-
-		if err := helpers.MatchUserToUid(c, user_id); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"code": "NotAuthozied", "error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"code": "UserNotFound", "error": err.Error()})
 			return
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
 
 		var user models.User
 
 		err = data.UserCollection.FindOne(ctx, bson.M{"userid": user_id}).Decode(&user)
-		defer cancel()
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": "ServerError", "error": "Something went wrong in server"})
@@ -102,5 +90,34 @@ func GetUser() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, user)
+	}
+}
+
+func GetUsersByRole() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role := c.Param("user_role")
+
+		if role != "ADMIN" && role != "DEAN" && role != "HOD" && role != "COURSEADVISER" {
+			c.JSON(http.StatusBadRequest, gin.H{"code": "RoleNotExist", "error": "Role does not exist"})
+			return
+		}
+
+		var ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		result, err := data.UserCollection.Find(ctx, bson.M{"role": role})
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"code": "ServerError", "error": "error occurred while fetching result"})
+			return
+		}
+
+		var users []models.User
+
+		if err := result.All(ctx, &users); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": "ServerError", "error": "error occurres while getting result"})
+		}
+
+		c.JSON(http.StatusOK, users)
 	}
 }

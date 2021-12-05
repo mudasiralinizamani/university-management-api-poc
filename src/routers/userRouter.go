@@ -9,4 +9,5 @@ import (
 func UserRouter(app *gin.Engine) {
 	app.GET("users/getusers", controllers.GetUsers())
 	app.GET("users/getuser/:user_id", controllers.GetUser())
+	app.GET("users/getusersbyrole/:user_role", controllers.GetUsersByRole())
 }
