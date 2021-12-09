@@ -116,6 +116,7 @@ func GetUsersByRole() gin.HandlerFunc {
 
 		if err := result.All(ctx, &users); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": "ServerError", "error": "error occurres while getting result"})
+			return
 		}
 
 		c.JSON(http.StatusOK, users)

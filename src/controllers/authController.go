@@ -6,7 +6,6 @@ import (
 	"time"
 	dtos "university-management-api/src/Dtos"
 	"university-management-api/src/data"
-	"university-management-api/src/helpers"
 	"university-management-api/src/models"
 	"university-management-api/src/services"
 
@@ -61,7 +60,7 @@ func Signup() gin.HandlerFunc {
 		user.ID = primitive.NewObjectID()
 		user.UserId = user.ID.Hex()
 
-		token, refreshToken, err := helpers.GenerateTokens(*user.Email, *user.FirstName, *user.LastName, *user.Role, user.UserId)
+		token, refreshToken, err := services.GenerateTokens(*user.Email, *user.FirstName, *user.LastName, *user.Role, user.UserId)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": "ServerError", "error": "error occurred while generating token"})
@@ -113,7 +112,7 @@ func Signin() gin.HandlerFunc {
 			return
 		}
 
-		isPasswordValid, msg := helpers.CheckPassword(*foundUser.Password, *dto.Password)
+		isPasswordValid, msg := services.CheckPassword(*foundUser.Password, *dto.Password)
 
 		if !isPasswordValid {
 			c.JSON(http.StatusBadRequest, gin.H{"code": "IncorrectPassword", "error": msg})
@@ -121,14 +120,14 @@ func Signin() gin.HandlerFunc {
 			return
 		}
 
-		token, refreshToken, err := helpers.GenerateTokens(*foundUser.Email, *foundUser.FirstName, *foundUser.LastName, *foundUser.Role, foundUser.UserId)
+		token, refreshToken, err := services.GenerateTokens(*foundUser.Email, *foundUser.FirstName, *foundUser.LastName, *foundUser.Role, foundUser.UserId)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": "ServerError", "error": " Error occurred while creating token and refresh token"})
 			return
 		}
 
-		helpers.UpdateTokens(token, refreshToken, foundUser.UserId)
+		services.UpdateTokens(token, refreshToken, foundUser.UserId)
 
 		err = data.UserCollection.FindOne(ctx, bson.M{"userid": foundUser.UserId}).Decode(&foundUser)
 

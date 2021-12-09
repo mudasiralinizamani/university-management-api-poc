@@ -50,4 +50,6 @@ func openCollection(dbClient *mongo.Client, collectionName string) *mongo.Collec
 
 // Collection Variables
 // These variables are used in throughout in the application - Mudasir Ali
-var UserCollection *mongo.Collection = openCollection(mongoClient, "user")
+var UserCollection *mongo.Collection = openCollection(mongoClient, "Users")
+var FacultyCollection *mongo.Collection = openCollection(mongoClient, "Faculties")
+var DepartmentCollection *mongo.Collection = openCollection(mongoClient, "Departments")

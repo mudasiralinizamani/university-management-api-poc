@@ -28,6 +28,8 @@ func main() {
 	routers.AuthRouter(app)
 	// app.Use(middlewares.Authorization())
 	routers.UserRouter(app)
+	routers.FacultyRouter(app)
+	routers.DepartmentRouter(app)
 
 	app.Run(":" + port)
 }

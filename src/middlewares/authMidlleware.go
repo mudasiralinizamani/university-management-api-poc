@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"net/http"
-	"university-management-api/src/helpers"
+	"university-management-api/src/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +16,7 @@ func Authorization() gin.HandlerFunc {
 			return
 		}
 
-		claims, err := helpers.ValidateToken(clientToken)
+		claims, err := services.ValidateToken(clientToken)
 
 		if err != "" {
 			c.JSON(http.StatusBadRequest, gin.H{"code": "InvalidToken", "error": err})

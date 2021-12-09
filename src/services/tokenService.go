@@ -1,4 +1,4 @@
-package helpers
+package services
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type SignedDetails struct {
 	jwt.StandardClaims
 }
 
-func GenerateTokens(email string, firstName string, lastName string, role string, uid string) (signedToken string, signedRefreshToken string, err error) {
+func GenerateTokens(email, firstName, lastName, role, uid string) (signedToken, signedRefreshToken string, err error) {
 	err = nil
 
 	claims := &SignedDetails{
@@ -62,7 +62,7 @@ func GenerateTokens(email string, firstName string, lastName string, role string
 
 }
 
-func UpdateTokens(signedToken string, signedRefreshToken string, userId string) {
+func UpdateTokens(signedToken, signedRefreshToken string, userId string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	var updateObj primitive.D
