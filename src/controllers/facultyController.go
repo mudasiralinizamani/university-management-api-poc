@@ -36,16 +36,17 @@ func CreateFaculty() gin.HandlerFunc {
 			return
 		}
 
+		err = services.CheckUser(faculty.DeanId)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"code": "UserNotFound", "error": "Dean does not exist"})
+			return
+		}
+
 		err = services.CheckUserByRole(faculty.DeanId, "DEAN")
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		err = services.CheckFacultyDean(faculty.DeanId)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"code": "DeanExist", "error": "This Dean already have another faculty"})
 			return
 		}
 

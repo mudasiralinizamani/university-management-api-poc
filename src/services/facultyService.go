@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 	"university-management-api/src/data"
+	"university-management-api/src/models"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -49,4 +50,18 @@ func CheckFacultyDean(dean_id string) (err error) {
 		return err
 	}
 	return err
+}
+
+func GetFacultyById(faculty_id string) (faculty models.Faculty, err error) {
+	var ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = nil
+
+	foundErr := data.FacultyCollection.FindOne(ctx, bson.M{"facultyid": faculty_id}).Decode(&faculty)
+
+	if foundErr != nil {
+		err = foundErr
+		return faculty, err
+	}
+	return faculty, err
 }
