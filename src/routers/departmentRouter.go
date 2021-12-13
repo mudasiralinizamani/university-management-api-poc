@@ -10,4 +10,5 @@ func DepartmentRouter(app *gin.Engine) {
 	app.POST("/departments/create", controllers.CreateDepartment())
 	app.GET("/departments/getdepartments", controllers.GetDepartments())
 	app.GET("/departments/getdepartment/:department_id", controllers.GetDepartment())
+	app.GET("/departments/getfacultydepartments/:faculty_id", controllers.GetFacultyDepartments())
 }

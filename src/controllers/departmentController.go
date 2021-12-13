@@ -149,3 +149,35 @@ func GetDepartment() gin.HandlerFunc {
 		c.JSON(http.StatusOK, department)
 	}
 }
+
+func GetFacultyDepartments() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		faculty_id := c.Param("faculty_id")
+
+		err := services.CheckFacultyById(faculty_id)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"code": "FacultyNotFound", "error": "Faculty Does not exist"})
+			return
+		}
+
+		var ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		result, err := data.DepartmentCollection.Find(ctx, bson.M{"facultyid": faculty_id})
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": "ServerError", "error": "Error occurred while getting result"})
+			return
+		}
+
+		var departments []models.Department
+
+		if err = result.All(ctx, &departments); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": "ServerError", "error": "Error occurred while fetching result"})
+			return
+		}
+
+		c.JSON(http.StatusOK, departments)
+	}
+}
