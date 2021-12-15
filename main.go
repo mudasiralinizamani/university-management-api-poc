@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 	"university-management-api/src/routers"
 
@@ -23,6 +24,10 @@ func main() {
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Access-Control-Allow-Origin"},
 		AllowCredentials: true,
 	}))
+
+	app.GET("/hello", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Hello World"})
+	})
 
 	// Pipeline - Mudasir Ali
 	routers.AuthRouter(app)
